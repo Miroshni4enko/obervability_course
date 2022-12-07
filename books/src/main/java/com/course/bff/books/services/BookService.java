@@ -12,9 +12,11 @@ import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
 import org.asynchttpclient.util.HttpConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,8 +43,11 @@ public class BookService {
         return this.books.stream().filter(book -> !book.getId().equals(id)).findFirst();
     }
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     public Book create(CreateBookCommand createBookCommand) {
-        Optional<AuthorResponse> authorSearch = getAutor(createBookCommand.getAuthorId());
+        Optional<AuthorResponse> authorSearch = getAuthor(createBookCommand.getAuthorId());
         if (authorSearch.isEmpty()) {
             throw new RuntimeException("Author isn't found");
         }
@@ -56,27 +61,9 @@ public class BookService {
         return book;
     }
 
-    private Optional<AuthorResponse> getAutor(UUID authorId) {
-        DefaultAsyncHttpClientConfig.Builder clientBuilder = Dsl.config().setConnectTimeout(500);
-        AsyncHttpClient client = Dsl.asyncHttpClient(clientBuilder);
-        Request socketRequest = new RequestBuilder(HttpConstants.Methods.GET)
-                .setUrl(authorService + "/api/v1/authors/" + authorId.toString())
-                .build();
-
-        ListenableFuture<Response> socketFuture = client.executeRequest(socketRequest);
-        try {
-            Response response = socketFuture.get();
-            if (response.getStatusCode() != HttpStatus.OK.value()) {
-                return Optional.empty();
-            }
-
-            AuthorResponse authorResponse = new Gson()
-                    .fromJson(response.getResponseBody(), AuthorResponse.class);
-
-            return Optional.of(authorResponse);
-
-        } catch (InterruptedException | ExecutionException e) {
-            return Optional.empty();
-        }
+    private Optional<AuthorResponse> getAuthor(UUID authorId) {
+        AuthorResponse authorResponse= restTemplate
+                .getForObject( authorService + "/api/v1/authors/" + authorId.toString(), AuthorResponse.class);
+        return Optional.of(authorResponse);
     }
 }
