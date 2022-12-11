@@ -12,13 +12,26 @@
     <artifactId>bff-frontend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>bff-frontend</name>
-    <description>Frontend agregate service for "Backend for Frontend" course</description>
+    <description>Frontend aggregate service for "Backend for Frontend" course</description>
 
     <properties>
         <java.version>11</java.version>
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zipkin</artifactId>
+            <version>2.1.7.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+            <version>2.1.7.RELEASE</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
@@ -27,6 +40,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.20</version>
             <optional>true</optional>
         </dependency>
         <dependency>

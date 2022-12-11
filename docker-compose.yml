@@ -1,5 +1,13 @@
 version: "3"
 services:
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - 9411:9411
+    networks:
+      - mynet
+
   authors:
     image: estoyanov/bff-authors-service:1.0
     container_name: bff-authors-service
